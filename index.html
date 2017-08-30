@@ -1,0 +1,113 @@
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<body>
+  <p id = "log"></p>
+</body>
+<script>
+mouse = {
+  left : 0,top : 0
+}
+
+joystick = {
+  down : false,
+  up : false,
+  left: false,
+  right: false
+}
+bodyset = false;
+stickhandler = false;
+$('body').on("mousemove",function(e) {
+  mouse.left = e.pageX - $(document).scrollLeft() - $('body').offset().left
+  mouse.top = e.pageY - $(document).scrollTop() - $('body').offset().top
+  if (stickhandler) {definestick(mouse.left,mouse.top);}
+});
+
+
+function joystick_start()
+{
+ $("body").on("mousedown",mousedownhandler)
+ $("body").on("mouseup",mouseuphandler)
+}
+
+function joystick_pause()
+{
+$("body").off("mousedown",mousedownhandler);
+$("body").off("mouseup",mouseuphandler);
+}
+
+function mousedownhandler(){
+  definestick(mouse.left,mouse.top);
+  stickhandler = true;
+}
+
+function mouseuphandler(){
+  bodyset = false;
+  stickhandler = false;
+  $(".stick").remove();
+  $(".joy").remove();
+}
+
+joystick_start();
+
+
+
+
+function definestick(left,top)
+{
+  if (bodyset == false){
+    stick = $("<div></div>");
+    stick.css({
+      position : "absolute" ,
+    "background-color":"black",
+    "border-radius" : "50%",
+       height:100,
+       width:100,
+       "left":left - 50,
+       "top":top -50
+    });
+    stick.addClass( "stick")
+    stick.appendTo("body");
+    s =  $("<div></div>");
+    s.css({
+      position : "absolute" ,
+    "background-color":"red",
+    "border-radius" : "50%",
+       height:50,
+       width:50,
+       "left":left - 25,
+       "top":top -25
+    })
+    s.addClass( "joy")
+    s.appendTo("body");
+    bodyset = true;
+  }else{
+
+    if (Math.abs(left -  parseInt($(".stick").css("left"))-50) < 50){
+    $(".joy").css("left",left - 25);}
+
+    $("#log").text(Math.sin())
+    if (Math.abs(top -  parseInt($(".stick").css("top"))-50) < 50){
+    $(".joy").css("top",top - 25);}
+
+  }
+  p1 = {
+    x : 0,
+    y : 0
+  }
+  p2 = {
+    x : parseInt($(".joy").css("left")) -  parseInt($(".stick").css("left"))-25 ,
+    y : parseInt($(".joy").css("top")) -  parseInt($(".stick").css("top")) - 25
+  }
+
+  Vx = p2.x - p1.x;
+  Vy = p1.y - p2.y;
+  var radians = Math.atan2(Vy, Vx);
+	if (radians < 0) radians += 2*Math.PI;
+	//console.log( Math.round(radians*180/Math.PI));
+  //console.log( p1.x  + "  " + p1.y  + "       " +p2.x  + "  " + p2.y)
+}
+
+
+</script>
