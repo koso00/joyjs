@@ -83,28 +83,39 @@ function definestick(left,top)
     s.appendTo("body");
     bodyset = true;
   }else{
+    p1 = {
+      x : 0,
+      y : 0
+    }
+    p2 = {
+      x : mouse.left -  parseInt($(".stick").css("left"))-50,
+      y : mouse.top  -  parseInt($(".stick").css("top"))-50
+    }
+    Vx = p2.x - p1.x;
+    Vy = p1.y - p2.y;
+    distance = Math.sqrt( Vy*Vy + Vx*Vx )
+    var radians = Math.atan2(Vy, Vx);
+    if (radians < 0) radians += 2*Math.PI;
 
-    if (Math.abs(left -  parseInt($(".stick").css("left"))-50) < 50){
-    $(".joy").css("left",left - 25);}
+    $("#log").text(radians + "   " +Math.cos(radians))
 
-    $("#log").text(Math.sin())
-    if (Math.abs(top -  parseInt($(".stick").css("top"))-50) < 50){
-    $(".joy").css("top",top - 25);}
+    if (Math.abs(left -  parseInt($(".stick").css("left"))-50) < Math.abs(Math.cos(radians)*50)){
+    $(".joy").css("left",left - 25);}else{
+
+    }
+
+
+    if (Math.abs(top -  parseInt($(".stick").css("top"))-50) <  Math.abs(Math.sin(radians)*50)){
+    $(".joy").css("top",top - 25);}else{
+
+    }
 
   }
-  p1 = {
-    x : 0,
-    y : 0
-  }
-  p2 = {
-    x : parseInt($(".joy").css("left")) -  parseInt($(".stick").css("left"))-25 ,
-    y : parseInt($(".joy").css("top")) -  parseInt($(".stick").css("top")) - 25
-  }
 
-  Vx = p2.x - p1.x;
-  Vy = p1.y - p2.y;
-  var radians = Math.atan2(Vy, Vx);
-	if (radians < 0) radians += 2*Math.PI;
+
+
+
+
 	//console.log( Math.round(radians*180/Math.PI));
   //console.log( p1.x  + "  " + p1.y  + "       " +p2.x  + "  " + p2.y)
 }
