@@ -18,23 +18,40 @@ joystick = {
 }
 bodyset = false;
 stickhandler = false;
+
 $('body').on("mousemove",function(e) {
   mouse.left = e.pageX - $(document).scrollLeft() - $('body').offset().left
   mouse.top = e.pageY - $(document).scrollTop() - $('body').offset().top
   if (stickhandler) {definestick(mouse.left,mouse.top);}
 });
 
+document.addEventListener('touchmove', function(e) {
+    var touch = e.touches[0];
+    mouse.left = touch.pageX - $(document).scrollLeft() - $('body').offset().left
+    mouse.top = touch.pageY - $(document).scrollTop() - $('body').offset().top
+      if (stickhandler) {definestick(mouse.left,mouse.top);}
+}, false);
+
 
 function joystick_start()
 {
- $("body").on("mousedown",mousedownhandler)
- $("body").on("mouseup",mouseuphandler)
+$("body").on("touchstart",function(e){
+    var touch = e.touches[0];
+    mouse.left = touch.pageX - $(document).scrollLeft() - $('body').offset().left
+    mouse.top = touch.pageY - $(document).scrollTop() - $('body').offset().top
+    console.log(mouse.left +  " " + mouse.top)
+  })
+ $("body").on("touchstart mousedown",mousedownhandler)
+ $("body").on("touchend mouseup",mouseuphandler)
 }
 
 function joystick_pause()
 {
 $("body").off("mousedown",mousedownhandler);
 $("body").off("mouseup",mouseuphandler);
+
+$("body").off("touchstart",mousedownhandler)
+$("body").off("touchend",mouseuphandler)
 }
 
 function mousedownhandler(){
@@ -45,8 +62,12 @@ function mousedownhandler(){
 function mouseuphandler(){
   bodyset = false;
   stickhandler = false;
-  $(".stick").remove();
-  $(".joy").remove();
+  $(".stick").fadeOut(200)
+  $(".joy").fadeOut(200)
+  setTimeout(function(){
+    $(".stick").remove()
+    $(".joy").remove()
+  },200)
 }
 
 joystick_start();
@@ -57,6 +78,10 @@ joystick_start();
 function definestick(left,top)
 {
   if (bodyset == false){
+    abs = {
+      x : left,
+      y: top
+    }
     stick = $("<div></div>");
     stick.css({
       position : "absolute" ,
@@ -68,7 +93,7 @@ function definestick(left,top)
        "top":top -50
     });
     stick.addClass( "stick")
-    stick.appendTo("body");
+    stick.appendTo("body").hide().fadeIn(200);
     s =  $("<div></div>");
     s.css({
       position : "absolute" ,
@@ -80,7 +105,7 @@ function definestick(left,top)
        "top":top -25
     })
     s.addClass( "joy")
-    s.appendTo("body");
+    s.appendTo("body").hide().fadeIn(200);
     bodyset = true;
   }else{
     p1 = {
@@ -91,23 +116,27 @@ function definestick(left,top)
       x : mouse.left -  parseInt($(".stick").css("left"))-50,
       y : mouse.top  -  parseInt($(".stick").css("top"))-50
     }
+    abs = {
+      x : parseInt($(".stick").css("left"))-50,
+      y: parseInt($(".stick").css("top"))-50
+    }
     Vx = p2.x - p1.x;
     Vy = p1.y - p2.y;
     distance = Math.sqrt( Vy*Vy + Vx*Vx )
     var radians = Math.atan2(Vy, Vx);
     if (radians < 0) radians += 2*Math.PI;
 
-    $("#log").text(radians + "   " +Math.cos(radians))
+    $("#log").text(abs.x + "   " +abs.y + " " + $(".joy").css("left") + " " + $(".joy").css("top"))
 
     if (Math.abs(left -  parseInt($(".stick").css("left"))-50) < Math.abs(Math.cos(radians)*50)){
     $(".joy").css("left",left - 25);}else{
-
+    $(".joy").css("left",abs.x + 74 + Math.cos(radians)*50)
     }
 
 
     if (Math.abs(top -  parseInt($(".stick").css("top"))-50) <  Math.abs(Math.sin(radians)*50)){
     $(".joy").css("top",top - 25);}else{
-
+      $(".joy").css("top",abs.y + 74 + Math.sin(radians)*-50)
     }
 
   }
