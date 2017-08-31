@@ -31,6 +31,9 @@ function joystick(zone){
   this.deg = function(){
     return deg;
   }
+  this.distance = function(){
+    return distance;
+  }  
   this.deltaX = function(){
     return Math.abs(abs.x -  parseInt($(".joy").css("left"))-25)
   }
